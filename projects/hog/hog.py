@@ -223,25 +223,19 @@ def announce_highest(who, last_score=0, running_high=0):
     """
     assert who == 0 or who == 1, 'The who argument should indicate a player.'
     # BEGIN PROBLEM 7
-    global ls 
-    global rh 
-    ls = last_score
-    rh = running_high
     def say(score0, score1):
-        global ls 
-        global rh
         if who == 0:
-            this_tern_score = score0 - ls
-            if this_tern_score > rh:
-                print(this_tern_score, "point(s)! That's the biggest gain yet for Player", who)
-                rh = this_tern_score
-            return announce_highest(who, score0, this_tern_score)
+            if score0 - last_score > running_high:
+                print(score0 - last_score, "point(s)! That's the biggest gain yet for Player", who)
+                return announce_highest(who, score0 + last_score, score0 - last_score)
+            else
+                return announce_highest(who, score0 + last_score, running_high)
         else:
-            this_tern_score = score1 - ls
-            if this_tern_score > rh:
-                print(this_tern_score, "point(s)! That's the biggest gain yet for Player", who)
-                rh = this_tern_score
-            return announce_highest(who, score1, this_tern_score)
+            if score1 - last_score > running_high:
+                print(score1 - last_score, "point(s)! That's the biggest gain yet for Player", who)
+                return announce_highest(who, score1 + last_score, score1 - last_score)
+            else
+                return announce_highest(who, score1 + last_score, running_high)
     return say
     # END PROBLEM 7
 
