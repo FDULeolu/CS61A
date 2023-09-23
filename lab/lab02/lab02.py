@@ -142,7 +142,7 @@ def cycle(f1, f2, f3):
     19
     """
     def cycle_func(n):
-        def n_cycle_func(x):
+        def n_cycle_func(x):  
             if n == 0:
                 return x
             i = 2
