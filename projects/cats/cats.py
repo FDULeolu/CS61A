@@ -16,7 +16,12 @@ def choose(paragraphs, select, k):
     the empty string.
     """
     # BEGIN PROBLEM 1
-    "*** YOUR CODE HERE ***"
+    for i in range(len(paragraphs)):
+        if select(paragraphs[i]):
+            k -= 1
+        if k < 0:
+            return paragraphs[i]
+    return ''
     # END PROBLEM 1
 
 
@@ -32,7 +37,13 @@ def about(topic):
     """
     assert all([lower(x) == x for x in topic]), 'topics should be lowercase.'
     # BEGIN PROBLEM 2
-    "*** YOUR CODE HERE ***"
+    def about_topic(words):
+        processed_words = split(remove_punctuation(lower(words)))
+        for w in topic:
+            if w in processed_words:
+                return True
+        return False
+    return about_topic
     # END PROBLEM 2
 
 
@@ -55,8 +66,15 @@ def accuracy(typed, reference):
     """
     typed_words = split(typed)
     reference_words = split(reference)
-    # BEGIN PROBLEM 3
-    "*** YOUR CODE HERE ***"
+    typed_length = len(typed_words)
+    reference_length = len(reference_words)
+    num_correct_words = 0
+    if typed_length == 0 or reference_length == 0:
+        return 0.0
+    for i in range(min(typed_length, reference_length)):
+        if typed_words[i] == reference_words[i]:
+            num_correct_words += 1
+    return round(num_correct_words / typed_length * 100, 2)
     # END PROBLEM 3
 
 
@@ -64,7 +82,7 @@ def wpm(typed, elapsed):
     """Return the words-per-minute (WPM) of the TYPED string."""
     assert elapsed > 0, 'Elapsed time must be positive'
     # BEGIN PROBLEM 4
-    "*** YOUR CODE HERE ***"
+    return len(typed) / 5 / elapsed * 60
     # END PROBLEM 4
 
 
@@ -74,7 +92,19 @@ def autocorrect(user_word, valid_words, diff_function, limit):
     than LIMIT.
     """
     # BEGIN PROBLEM 5
-    "*** YOUR CODE HERE ***"
+    if user_word in valid_words:
+        return user_word
+    else:
+        difference = float('inf')
+        return_word = ''
+        for w in valid_words:
+            if diff_function(user_word, w, limit) < difference:
+                return_word = w
+                difference = diff_function(user_word, w, limit)
+        if difference <= limit:
+            return return_word
+        else:
+            return user_word
     # END PROBLEM 5
 
 
@@ -84,30 +114,42 @@ def shifty_shifts(start, goal, limit):
     their lengths.
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    if start == '':
+        return len(goal)
+    elif goal == '':
+        return len(start)
+    elif start[0] != goal[0]:
+        if limit == 0:
+            return 1
+        return shifty_shifts(start[1:], goal[1:], limit - 1) + 1
+    else:
+        return shifty_shifts(start[1:], goal[1:], limit)
     # END PROBLEM 6
 
 
 def meowstake_matches(start, goal, limit):
     """A diff function that computes the edit distance from START to GOAL."""
-    assert False, 'Remove this line'
+    
 
-    if ______________: # Fill in the condition
+    if limit < 0: 
         # BEGIN
-        "*** YOUR CODE HERE ***"
+        return 1
         # END
 
-    elif ___________: # Feel free to remove or add additional cases
+    elif len(start) == 0 or len(goal) == 0: 
         # BEGIN
-        "*** YOUR CODE HERE ***"
+        return len(start) + len(goal)
         # END
+
+    elif start[0] == goal[0]:
+        return meowstake_matches(start[1:], goal[1:], limit)
 
     else:
-        add_diff = ...  # Fill in these lines
-        remove_diff = ... 
-        substitute_diff = ... 
+        add_diff = meowstake_matches(start,  goal[1:], limit - 1)
+        remove_diff = meowstake_matches(start[1:], goal, limit - 1)
+        substitute_diff = meowstake_matches(start[1:], goal[1:], limit - 1)
         # BEGIN
-        "*** YOUR CODE HERE ***"
+        return 1 + min(add_diff, remove_diff, substitute_diff)
         # END
 
 
@@ -124,7 +166,16 @@ def final_diff(start, goal, limit):
 def report_progress(typed, prompt, id, send):
     """Send a report of your id and progress so far to the multiplayer server."""
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    index = 0
+    progress = 0
+    while index < min(len(typed), len(prompt)):
+        if typed[index] == prompt[index]:
+            index += 1
+            progress += 1
+        else:
+            break
+    send({'id':id, 'progress':progress / len(prompt)})
+    return progress / len(prompt)
     # END PROBLEM 8
 
 
@@ -150,7 +201,13 @@ def time_per_word(times_per_player, words):
         words: a list of words, in the order they are typed.
     """
     # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
+    time = []
+    for player in times_per_player:
+        player_time = []
+        for i in range(len(player) - 1):
+            player_time.append(player[i+1] - player[i])
+        time.append(player_time)
+    return game(words, time)
     # END PROBLEM 9
 
 
@@ -165,7 +222,22 @@ def fastest_words(game):
     players = range(len(all_times(game)))  # An index for each player
     words = range(len(all_words(game)))    # An index for each word
     # BEGIN PROBLEM 10
-    "*** YOUR CODE HERE ***"
+    words = all_words(game)
+    time = all_times(game)
+    num_player = len(time)
+    result = [[] for i in range(num_player)]
+
+    def fastest_index(num_player, word_index, time):
+        fast_one = 0
+        for i in range(num_player):
+            if time[i][word_index] < time[fast_one][word_index]:
+                fast_one = i
+        return fast_one
+    
+    for i in range(len(words)):
+        result[fastest_index(num_player, i, time)].append(words[i])
+    
+    return result
     # END PROBLEM 10
 
 
@@ -220,7 +292,19 @@ def key_distance_diff(start, goal, limit):
     goal = goal.lower() #converts the string to lowercase
 
     # BEGIN PROBLEM EC1
-    "*** YOUR CODE HERE ***"
+    if limit < 0 :
+        return float('inf')
+    if len(start) == 0 or len(goal) == 0:
+        return len(start) + len(goal)
+    elif start[0] == goal[0]:
+        return key_distance_diff(start[1:], goal[1:], limit)
+    else:
+        add_diff = 1 + key_distance_diff(start,  goal[1:], limit - 1)
+        remove_diff = 1 + key_distance_diff(start[1:], goal, limit - 1)
+        kd = key_distance[start[0], goal[0]]
+        substitute_diff = kd + key_distance_diff(start[1:], goal[1:], limit - 1)
+        # BEGIN
+        return min(add_diff, remove_diff, substitute_diff)
     # END PROBLEM EC1
 
 def memo(f):
@@ -235,13 +319,49 @@ def memo(f):
 
 key_distance_diff = count(key_distance_diff)
 
-
+# 不会做，没搞懂。。。
 def faster_autocorrect(user_word, valid_words, diff_function, limit):
     """A memoized version of the autocorrect function implemented above."""
 
     # BEGIN PROBLEM EC2
-    "*** YOUR CODE HERE ***"
+    diff_function = memo(diff_function)
+
+    if user_word in valid_words:
+        return user_word
+    else:
+        difference = float('inf')
+        return_word = ''
+        for w in valid_words:
+            if diff_function(user_word, w, limit) < difference:
+                return_word = w
+                difference = diff_function(user_word, w, limit)
+        if difference <= limit:
+            return return_word
+        else:
+            return user_word
     # END PROBLEM EC2
+
+    # 大佬的答案
+# key_distance_diff = memo(key_distance_diff)
+# memo_for_fa = {}
+#     idx = tuple([user_word, tuple(valid_words), diff_function, limit])
+#     if user_word in valid_words:
+#         return user_word
+#     if idx in memo_for_fa:
+#         return memo_for_fa[idx]
+#     else:
+#         # print("DEBUG: will is in the valid_words", "will" in valid_words)
+#         # print("DEBUG: dist(woll, will) = ", diff_function(user_word, "will", limit))
+#         # print("DEBUG: dist(woll, well) = ", diff_function(user_word, "well", limit))
+#         words_diff = [diff_function(user_word, w, limit) for w in valid_words]
+#         similar_word, similar_diff = min(zip(valid_words, words_diff), key=lambda item: item[1])
+#         print("DEBUG:", similar_word)
+#         if similar_diff > limit:
+#             ret = user_word
+#         else:
+#             ret = similar_word
+#         memo_for_fa[idx] = ret
+#         return ret
 
 
 ##########################
