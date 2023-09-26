@@ -31,7 +31,7 @@ def about(topic):
 
     >>> about_dogs = about(['dog', 'dogs', 'pup', 'puppy'])
     >>> choose(['Cute Dog!', 'That is a cat.', 'Nice pup!'], about_dogs, 0)
-    'Cute Dog!'
+    'Cute Dog!' 
     >>> choose(['Cute Dog!', 'That is a cat.', 'Nice pup.'], about_dogs, 1)
     'Nice pup.'
     """
