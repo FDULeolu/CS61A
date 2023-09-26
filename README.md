@@ -7,4 +7,4 @@ Diagnositic Quiz 1 2 3
 
 Project cats EC2
 
-Discussion 05 Quiz 1(a)
+Discussion 05 Quiz 1(a) 1(b)
