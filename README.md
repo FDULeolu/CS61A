@@ -1,7 +1,7 @@
-# cs61a难题整理
+# CS61A Self-Study
 
-这是一个cs61a的自学记录，我会在下面列出我在学习过程中遇到的一些感觉比较困难的题目，以便复习和参考。
-因为是从中间才开始记录，所以前半部分会有缺失，如果以后有空再补上。
+This is a self-study record of cs61a. I will list some difficult topics I met in the learning process below for review and reference. 
+Since the records start in the middle, there will be missing parts in the first half, which can be filled in later if you are free.
 
 Diagnositic Quiz 1 2 3 
 
@@ -10,3 +10,5 @@ Project cats EC2
 Discussion 05 Quiz 1(a) 1(b)
 
 Lab 07 Q1
+
+Discussion 06 2.2 2.4(Give up for now)
