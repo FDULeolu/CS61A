@@ -12,3 +12,5 @@ Discussion 05 Quiz 1(a) 1(b)
 Lab 07 Q1
 
 Discussion 06 2.2 2.4(Give up for now)
+
+HW 05 Q6
