@@ -674,3 +674,188 @@ def subset_sum(seq, k):
         return False
     else:
         return subset_sum(seq[1:], k - seq[0])
+    
+
+####################################################################
+# Discussion 08 Iterators, Generators, Object-Oriented Programming #
+####################################################################
+
+# 2.1
+"""
+Write a generator function generate_subsets that returns all subsets of the positive integers from 1 to n. Each call to this generator’s next method will return a list of subsets of the set [1, 2, ..., n], where n is the number of previous calls to next.
+"""
+def generate_subsets():
+    """
+    >>> subsets = generate_subsets()
+    >>> for _ in range(3):
+    ...     print(next(subsets))
+    ...
+    [[]]
+    [[], [1]]
+    [[], [1], [2], [1, 2]]
+    """
+    def subset(sets):
+        if len(sets) == 0:
+            return [[]]
+        elif len(sets) == 1:
+            return [[], sets]
+        else:
+            subset_with_last = []
+            for s in subset(sets[:-1]):
+                s.append(sets[-1])
+                subset_with_last.append(s)
+
+            subset_without_last = subset(sets[:-1])
+            return subset_without_last + subset_with_last
+    i = 0
+    while True:
+        sets = [i + 1 for i in range(i)]
+        yield subset(sets)
+        i += 1
+
+
+# 2.2
+"""
+Implement sum paths gen, which takes in a tree t and and returns a generator which yields the sum of all the nodes from a path from the root of a tree to a leaf.
+You may yield the sums in any order.
+"""
+def sum_paths_gen(t):
+    """
+    >>> t1 = tree(5)
+    >>> next(sum_paths_gen(t1))
+    5
+    >>> t2 = tree(1, [tree(2, [tree(3), tree(4)]), tree(9)])
+    >>> sorted(sum_paths_gen(t2))
+    [6, 7, 10]
+    """
+    if is_leaf(t):
+        yield label(t)
+    for b in branches(t):
+        for n in sum_paths_gen(b):
+            yield n + label(t)
+    
+
+# 3.2
+"""
+We now want to write three different classes, Server, Client, and Email to simulate email. Fill in the definitions below to finish the implementation! There are more methods to fill out on the next page.
+
+We suggest that you approach this problem by first filling out the Email class, then fill out the register client method of Server, then implement the Client class, and lastly fill out the send method of the Server class.
+"""
+class Email:
+    """
+    Every email object has 3 instance attributes: the message, the sender name, and the recipient name.
+    """
+    def __init__(self, msg, sender_name, recipient_name):
+        self.msg = msg
+        self.sender_name = sender_name
+        self.recipient_name = recipient_name
+
+class Server:
+    """
+    Each Server has an instance attribute clients, which is a dictionary that associates client names with client objects.
+    """
+    def __init__(self):
+        self.clients = {}
+
+    def send(self, email):
+        """
+        Take an email and put it in the inbox of the client it is addressed to.
+        """
+        self.clients[email.recipient_name].receive(email)
+
+
+    def register_client(self, client, client_name):
+        """
+        Takes a client object and client_name and adds themto the clients instance attribute.
+        """
+        self.clients[client_name] = client
+
+class Client:
+    """
+    Every Client has instance attributes name (which is used for addressing emails to the client), server (which is used to send emails out to other clients), and inbox (a list of all emails the client has received).
+    """
+    def __init__(self, server, name):
+        self.inbox = []
+        self.server = server
+        self.name = name
+    
+    def compose(self, msg, recipient_name):
+        """
+        Send an email with the given message msg to the given recipient client.
+        """
+        email_to_be_sent = Email(msg, self.name, recipient_name)
+        self.server.send(email_to_be_sent)
+
+    def receive(self, email):
+        """
+        Take an email and add it to the inbox of this client.
+        """
+        self.inbox.append(email)
+
+
+# 4.1
+"""
+Below is a skeleton for the Cat class, which inherits from the Pet class.To complete the implementation, override the init and talk methods and add a new lose_life method.
+
+Hint: You can call the init method of Pet to set a cat’s name and owner.
+"""
+class Pet():
+    def __init__(self, name, owner):
+        self.is_alive = True # It's alive!!!
+        self.name = name
+        self.owner = owner
+
+    def eat(self, thing):
+        print(self.name + " ate a " + str(thing) + "!")
+    
+    def talk(self):
+        print(self.name)
+
+class Cat(Pet):
+    def __init__(self, name, owner, lives=9):
+        self.name = name
+        self.owner = owner
+        self.lives = lives
+
+    def talk(self):
+        """ 
+        Print out a cat's greeting.
+
+        >>> Cat('Thomas', 'Tammy').talk()
+        Thomas says meow!
+        """
+        print(self.name + ' says meow!')
+
+    def lose_life(self):
+        """
+        Decrements a cat's life by 1. When lives reaches zero, 'is_alive' becomes False. If this is called after lives has reached zero, print out that the cat has no more lives to lose.
+        """
+        if not self.is_alive:
+            print('the cat has no more lives to lose.')
+        else:
+            self.lives -= 1
+            if self.lives == 0:
+                self.is_alive = False
+
+
+# 4.2
+"""
+More cats! Fill in this implemention of a class called NoisyCat, which is just like a normal Cat. However, NoisyCat talks a lot – twice as much as a regular Cat!
+"""
+class NoisyCat(Cat): # Fill me in!
+    """A Cat that repeats things twice."""
+
+    # def __init__(self, name, owner, lives=9):
+    #     # Is this method necessary? Why or why not?
+    #     pass
+
+    def talk(self):
+        """
+        Talks twice as much as a regular cat.
+
+        >>> NoisyCat('Magic', 'James').talk()
+        Magic says meow!
+        Magic says meow!
+        """
+        for i in range(2):
+            Cat(self.name, self.owner).talk()
