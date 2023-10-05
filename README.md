@@ -16,3 +16,5 @@ Discussion 06 2.2 2.4(Give up for now)
 HW 05 Q6
 
 Lab 09 Q6
+
+HW 06 Q6
