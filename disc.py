@@ -513,21 +513,21 @@ respectively. Do not use any python built-in data structures like lists or dicti
 You do not necessarily need to use all the lines.
 """
 def nonlocalist():
-    """
-    >>> prepend, get = nonlocalist()
-    >>> prepend(2)
-    >>> prepend(3)
-    >>> prepend(4)
-    >>> get(0)
-    4
-    >>> get(1)
-    3
-    >>> get(2)
-    2
-    >>> prepend(8)
-    >>> get(2)
-    3
-    """
+    # """
+    # >>> prepend, get = nonlocalist()
+    # >>> prepend(2)
+    # >>> prepend(3)
+    # >>> prepend(4)
+    # >>> get(0)
+    # 4
+    # >>> get(1)
+    # 3
+    # >>> get(2)
+    # 2
+    # >>> prepend(8)
+    # >>> get(2)
+    # 3
+    # """
     pass
     # get = lambda x: "Index out of range!"
     # def prepend(value):
@@ -548,21 +548,21 @@ Implement the memory function, which takes a number x and a singleargument funct
 square = lambda x: x * x
 double = lambda x: 2 * x
 def memory(x, f):
-    """
-    Return a higher-order function that prints its
-    memories.
+    # """
+    # Return a higher-order function that prints its
+    # memories.
 
-    >>> f = memory(3, lambda x: x)
-    >>> f = f(square)
-    3
-    >>> f = f(double)
-    9
-    >>> f = f(print)
-    6
-    >>> f = f(square)
-    3
-    None
-    """
+    # >>> f = memory(3, lambda x: x)
+    # >>> f = f(square)
+    # 3
+    # >>> f = f(double)
+    # 9
+    # >>> f = f(print)
+    # 6
+    # >>> f = f(square)
+    # 3
+    # None
+    # """
     # def g(h):
     #     print(x)
     #     return memory(h(x), f)
@@ -859,3 +859,271 @@ class NoisyCat(Cat): # Fill me in!
         """
         for i in range(2):
             Cat(self.name, self.owner).talk()
+
+
+#####################################
+# Discussion 09 Linked Lists, Trees #
+#####################################
+
+class Link:
+    empty = ()
+    def __init__(self, first, rest=empty):
+        assert rest is Link.empty or isinstance(rest, Link)
+        self.first = first
+        self.rest = rest
+
+    def __repr__(self):
+        if self.rest:
+            rest_str = ', ' + repr(self.rest)
+        else:
+            rest_str = ''
+        return 'Link({0}{1})'.format(repr(self.first), rest_str)
+
+    def __str__(self):
+        string = '<'
+        while self.rest is not Link.empty:
+            string += str(self.first) + ' '
+            self = self.rest
+        return string + str(self.first) + '>'
+
+
+# 1.1
+"""
+Write a function that takes in a a linked list and returns the sum of all its elements.
+You may assume all elements in lnk are integers.
+"""
+def sum_nums(lnk):
+    """
+    >>> a = Link(1, Link(6, Link(7)))
+    >>> sum_nums(a)
+    14
+    """
+    if lnk.rest == Link.empty:
+        return lnk.first
+    else:
+        return lnk.first + sum_nums(lnk.rest)
+    
+# 1.2
+"""
+Write a function that takes in a Python list of linked lists and multiplies them element-wise. It should return a new linked list.
+If not all of the Link objects are of equal length, return a linked list whose length is that of the shortest linked list given. You may assume the Link objects are shallow linked lists, and that lst of lnks contains at least one linked list.
+"""
+def multiply_lnks(lst_of_lnks):
+    """
+    >>> a = Link(2, Link(3, Link(5)))
+    >>> b = Link(6, Link(4, Link(2)))
+    >>> c = Link(4, Link(1, Link(0, Link(2))))
+    >>> p = multiply_lnks([a, b, c])
+    >>> p.first
+    48
+    >>> p.rest.first
+    12
+    >>> p.rest.rest.rest is Link.empty
+    True
+    """
+    multi = 1
+    for lnk in lst_of_lnks:
+        if lnk == Link.empty:
+            return Link.empty
+        else:
+            multi *= lnk.first
+    new_lst_of_lnks = []
+    for lnk in lst_of_lnks:
+        new_lst_of_lnks.append(lnk.rest)
+    return Link(multi, multiply_lnks(new_lst_of_lnks))
+
+
+# 1.3
+"""
+Implement filter link, which takes in a linked list link and a function f and returns a generator which yields the values of link for which f returns True.
+Try to implement this both using a while loop and without using any form of iteration.
+"""
+def filter_link(link, f):
+    """
+    >>> link = Link(1, Link(2, Link(3)))
+    >>> g = filter_link(link, lambda x: x % 2 == 0)
+    >>> next(g)
+    2
+    >>> list(filter_link(link, lambda x: x % 2 != 0))
+    [1, 3]
+    """
+    while link != Link.empty:
+        if f(link.first):
+            yield link.first
+        link = link.rest
+
+
+def filter_no_iter(link, f):
+    """
+    >>> link = Link(1, Link(2, Link(3)))
+    >>> list(filter_no_iter(link, lambda x: x % 2 != 0))
+    [1, 3]
+    """
+    if link == Link.empty:
+        return
+    elif f(link.first):
+        yield link.first
+    yield from filter_no_iter(link.rest, f)
+
+
+
+class Tree:
+    def __init__(self, label, branches=[]):
+        for b in branches:
+            assert isinstance(b, Tree)
+        self.label = label
+        self.branches = branches
+
+    def is_leaf(self):
+        return not self.branches
+    
+    def __repr__(self):
+        if self.branches:
+            branch_str = ', ' + repr(self.branches)
+        else:
+            branch_str = ''
+        return 'Tree({0}{1})'.format(self.label, branch_str)
+
+
+
+# 2.1
+"""
+Define a function make even which takes in a tree t whose values are integers, and mutates the tree such that all the odd integers are increased by 1 and all the even integers remain the same.
+"""
+def make_even(t):
+    """
+    >>> t = Tree(1, [Tree(2, [Tree(3)]), Tree(4), Tree(5)])
+    >>> make_even(t)
+    >>> t.label
+    2
+    >>> t.branches[0].branches[0].label
+    4
+    """
+    if t.is_leaf():
+        if t.label % 2 == 1:
+            t.label += 1
+        return
+    elif t.label % 2 == 1:
+        t.label += 1
+    for b in t.branches:
+        make_even(b)
+
+
+# 2.2
+"""
+Define a function square tree(t) that squares every value in the non-empty tree t. You can assume that every value is a number.
+"""
+def square_tree(t):
+    """Mutates a Tree t by squaring all its elements."""
+    if t.is_leaf():
+        t.label = t.label ** 2
+        return
+    else:
+        t.label = t.label ** 2
+        for b in branches:
+            square_tree(b)
+
+
+# 2.3
+"""
+Define the procedure find path that, given a Tree t and an entry, returns a list containing the nodes along the path required to get from the root of t to entry. If entry is not present in t, return False.
+
+Assume that the elements in t are unique. Find the path to an element.
+"""
+def find_path(t, entry):
+    """
+    >>> tree_ex = Tree(2, [Tree(7, [Tree(3), Tree(6, [Tree(5), Tree(11)])]), Tree(1)])
+    >>> find_path(tree_ex, 5)
+    [2, 7, 6, 5]
+    """
+    if t.is_leaf():
+        if t.label == entry:
+            return [t.label]
+        else:
+            return []
+    else:
+        if t.label == entry:
+            return [t.label]
+        else:
+            path = []
+            for b in t.branches:
+                sub_path = find_path(b, entry)
+                if sub_path:
+                    path.append([t.label] + sub_path)
+            if path:
+                return path[0]
+
+    return False
+
+
+# 2.4
+"""
+Assuming that every value in t is a number, define average(t), which returns the average of all the values in t. You may not need to use all the provided lines.
+"""
+def average(t):
+    """
+    Returns the average value of all the nodes in t.
+    >>> t0 = Tree(0, [Tree(1), Tree(2, [Tree(3)])])
+    >>> average(t0)
+    1.5
+    >>> t1 = Tree(8, [t0, Tree(4)])
+    >>> average(t1)
+    3.0
+    """
+    def sum_helper(t):
+        total, count = t.label, 1
+        for b in t.branches:
+            sub_total, sub_count = sum_helper(b)
+            total += sub_total
+            count += sub_count
+        return total, count
+    
+    total, count = sum_helper(t)
+
+    return total / count
+
+
+# 2.5
+"""
+Write a function that combines the values of two trees t1 and t2 together with the combiner function. Assume that t1 and t2 have identical structure. This function should return a new tree.
+
+Hint: consider using the zip() function, which returns an iterator of tuples where the first items of each iterable object passed in form the first tuple, the second items are paired together and form the second tuple, and so on and so forth.
+"""
+def combine_tree(t1, t2, combiner):
+    """
+    >>> a = Tree(1, [Tree(2, [Tree(3)])])
+    >>> b = Tree(4, [Tree(5, [Tree(6)])])
+    >>> combined = combine_tree(a, b, lambda x,y:x*y)
+    >>> combined.label
+    4
+    >>> combined.branches[0].label
+    10
+    """
+    combined_label = combiner(t1.label, t2.label)
+    combined_branches = [combine_tree(b1, b2,  combiner) for b1, b2 in zip(t1.branches, t2.branches)]
+
+    return Tree(combined_label, combined_branches)
+
+
+# 2.6
+"""
+Implement the alt tree map function that, given a function and a Tree, applies the function to all of the data at every other level of the tree, starting at the root.
+"""
+def alt_tree_map(t, map_fn):
+    """
+    >>> t = Tree(1, [Tree(2, [Tree(3)]), Tree(4)])
+    >>> negate = lambda x: x**2
+    >>> alt_tree_map(t, negate)
+    Tree(1, [Tree(16, [Tree(6561)]), Tree(256)])
+    """
+    def helper(t, map_fn):
+        if t.is_leaf():
+            return Tree(map_fn(t.label))
+        else:
+            new_branches = [helper(b, map_fn) for b in t.branches]
+            return Tree(map_fn(t.label), new_branches)
+    
+    t = helper(t, map_fn)
+    new_branches = [alt_tree_map(b, map_fn) for b in t.branches]
+    return Tree(t.label, new_branches)
+    
