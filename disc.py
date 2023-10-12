@@ -1126,4 +1126,10 @@ def alt_tree_map(t, map_fn):
     t = helper(t, map_fn)
     new_branches = [alt_tree_map(b, map_fn) for b in t.branches]
     return Tree(t.label, new_branches)
-    
+
+
+#####################################
+# Discussion 10 Scheme, Scheme Lists#
+#####################################
+
+# Finish questions in scm file.
