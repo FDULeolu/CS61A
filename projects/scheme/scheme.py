@@ -127,7 +127,16 @@ class Frame(object):
         <{a: 1, b: 2, c: 3} -> <Global Frame>>
         """
         # BEGIN PROBLEM 10
-        "*** YOUR CODE HERE ***"
+        if len(formals) != len(vals):
+            raise  SchemeError
+        else:
+            child_frame = Frame(self)
+            while formals is not nil:
+                formal, val = formals.first, vals.first
+                child_frame.define(formal, val)
+                formals, vals = formals.rest, vals.rest
+                print("DEBUG: {0}: {1}".format(formal, val))
+        return child_frame
         # END PROBLEM 10
 
 ##############
