@@ -10,25 +10,30 @@ test = {
           >>> vals = Pair(1, Pair(2, Pair(3, nil)))
           >>> frame = global_frame.make_child_frame(formals, vals)
           >>> global_frame.lookup('a') # Type SchemeError if you think this errors
-          SchemeError
+          ec908af60f03727428c7ee3f22ec3cd8
+          # locked
           >>> frame.lookup('a')        # Type SchemeError if you think this errors
-          1
+          eb892a26497f936d1f6cae54aacc5f51
+          # locked
           >>> frame.lookup('b')        # Type SchemeError if you think this errors
-          2
+          2b7cdec3904f986982cbd24a0bc12887
+          # locked
           >>> frame.lookup('c')        # Type SchemeError if you think this errors
-          3
+          3c7e8a3a2176a696c3a66418f78dff6b
+          # locked
           """,
           'hidden': False,
-          'locked': False
+          'locked': True
         },
         {
           'code': r"""
           >>> frame = global_frame.make_child_frame(nil, nil)
           >>> frame.parent is global_frame
-          True
+          b1796eff8a8e977439f97b5c6881a282
+          # locked
           """,
           'hidden': False,
-          'locked': False
+          'locked': True
         },
         {
           'code': r"""
