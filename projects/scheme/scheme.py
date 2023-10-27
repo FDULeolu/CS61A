@@ -135,7 +135,7 @@ class Frame(object):
                 formal, val = formals.first, vals.first
                 child_frame.define(formal, val)
                 formals, vals = formals.rest, vals.rest
-                print("DEBUG: {0}: {1}".format(formal, val))
+                # print("DEBUG: {0}: {1}".format(formal, val))
         return child_frame
         # END PROBLEM 10
 
@@ -345,7 +345,15 @@ def do_and_form(expressions, env):
     False
     """
     # BEGIN PROBLEM 12
-    "*** YOUR CODE HERE ***"
+    if expressions is nil:
+        return True
+    ptr = expressions
+    while ptr is not nil:
+        value = scheme_eval(ptr.first, env)
+        if is_false_primitive(value):
+            return False
+        ptr = ptr.rest
+    return value
     # END PROBLEM 12
 
 def do_or_form(expressions, env):
@@ -362,7 +370,15 @@ def do_or_form(expressions, env):
     6
     """
     # BEGIN PROBLEM 12
-    "*** YOUR CODE HERE ***"
+    if expressions is nil:
+        return False
+    ptr = expressions
+    while ptr is not nil:
+        value = scheme_eval(ptr.first, env)
+        if is_true_primitive(value):
+            return value
+        ptr = ptr.rest
+    return False
     # END PROBLEM 12
 
 def do_cond_form(expressions, env):
@@ -382,7 +398,10 @@ def do_cond_form(expressions, env):
             test = scheme_eval(clause.first, env)
         if is_true_primitive(test):
             # BEGIN PROBLEM 13
-            "*** YOUR CODE HERE ***"
+            if clause.rest == nil:
+                return test
+            else:
+                return eval_all(clause.rest, env)
             # END PROBLEM 13
         expressions = expressions.rest
 
@@ -406,7 +425,12 @@ def make_let_frame(bindings, env):
         raise SchemeError('bad bindings list in let form')
     names, values = nil, nil
     # BEGIN PROBLEM 14
-    "*** YOUR CODE HERE ***"
+    while bindings is not nil:
+        binding = bindings.first
+        validate_form(binding, 2, 2)
+        names, values = Pair(binding.first, names), Pair(scheme_eval(binding.rest.first, env), values)
+        validate_formals(names)
+        bindings = bindings.rest
     # END PROBLEM 14
     return env.make_child_frame(names, values)
 
@@ -421,7 +445,17 @@ def do_define_macro(expressions, env):
     1
     """
     # BEGIN Problem 20
-    "*** YOUR CODE HERE ***"
+    validate_form(expressions, 2)
+    target = expressions.first
+    if isinstance(target, Pair) and scheme_symbolp(target.first):
+        formals = target.rest
+        body = expressions.rest
+        macro_procedure = MacroProcedure(formals, body, env)
+        env.define(target.first, macro_procedure)
+        return target.first
+    else:
+        bad_target = target.first if isinstance(target, Pair) else target
+        raise SchemeError('non-symbol: {0}'.format(bad_target))
     # END Problem 20
 
 
@@ -532,7 +566,9 @@ class MuProcedure(Procedure):
         self.body = body
 
     # BEGIN PROBLEM 15
-    "*** YOUR CODE HERE ***"
+    def make_call_frame(self, args, env):
+        new_env = env.make_child_frame(self.formals, args)
+        return new_env
     # END PROBLEM 15
 
     def __str__(self):
@@ -548,7 +584,7 @@ def do_mu_form(expressions, env):
     formals = expressions.first
     validate_formals(formals)
     # BEGIN PROBLEM 18
-    "*** YOUR CODE HERE ***"
+    return MuProcedure(formals, expressions.rest)
     # END PROBLEM 18
 
 SPECIAL_FORMS['mu'] = do_mu_form
@@ -620,7 +656,9 @@ def optimize_tail_calls(prior_eval_function):
 
         result = Thunk(expr, env)
         # BEGIN
-        "*** YOUR CODE HERE ***"
+        while isinstance(result, Thunk):
+            result = prior_eval_function(result.expr, result.env)
+        return result
         # END
     return optimized_eval
 
@@ -632,7 +670,7 @@ def optimize_tail_calls(prior_eval_function):
 ################################################################
 # Uncomment the following line to apply tail call optimization #
 ################################################################
-# scheme_eval = optimize_tail_calls(scheme_eval)
+scheme_eval = optimize_tail_calls(scheme_eval)
 
 
 
